@@ -38,7 +38,7 @@ function erc20(ourWallet, tokenAddress) {
 // Buy function (BNB -> ERC20)
 async function buy(ourWallet, tokenAddress, gasLimit, gasPrice) {
   // How much we are going to buy. (BNB to Gwei)
-  const budget = "0.025";
+  const budget = "0.1";
   const buyAmount = ethers.utils.parseUnits(budget, "ether");
 
   // The difference between the expected price of the trade and the final price of the trade when executed.
