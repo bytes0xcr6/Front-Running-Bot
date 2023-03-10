@@ -23,7 +23,7 @@ To install the bot, simply clone the repository and install the dependencies:
 Copy code
 ```
 git clone https://github.com/CristianRicharte6/Front-Running-Bot
-cd front-running-bot-pancake
+cd Front-Running-Bot
 npm install
 ```
 ### Configuration
