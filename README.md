@@ -34,6 +34,14 @@ WSS=<wss Node Url>
 PRIVATE_KEY=<the private key of your wallet>
 ```
 
+You can also update the next fields in the bot.js:
+```
+line41: const budget = "How much you would like to buy when the bot executes the transaction"
+```
+```
+line198: if (value > "It will filter transactions with higer value than this number") {}
+```
+
 ### Running the Bot
 
 To run the bot, simply run the following command:
