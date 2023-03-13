@@ -14,10 +14,10 @@ const BNBaddress = "0xbb4CdB9CBd36B01bD1cBaEBF2De08d9173bc095c";
 // Function to calculate the gas fee to pay. To sandwich the high value transaction.
 function calculateGasPrice(action, value) {
   if (action === "buy") {
-    return ethers.utils.formatUnits(amount++, "gwei");
+    return ethers.formatUnits(value++, "gwei");
   } else {
     // If it is a sell substract 1
-    return ethers.utils.formatUnits(amount--, "gwei");
+    return ethers.formatUnits(value--, "gwei");
   }
 }
 
@@ -38,11 +38,11 @@ function erc20(ourWallet, tokenAddress) {
 // Buy function (BNB -> ERC20)
 async function buy(ourWallet, tokenAddress, gasLimit, gasPrice) {
   // How much we are going to buy. (BNB to Gwei)
-  const budget = "0.1";
-  const buyAmount = ethers.utils.parseUnits(budget, "ether");
+  const budget = 0.01;
+  const buyAmount = ethers.parseUnits(budget.toString(), "ether");
 
   // The difference between the expected price of the trade and the final price of the trade when executed.
-  const slippage = 0;
+  const slippage = 1;
 
   // How many tokens we are going to receive.
   let amountOutMin = 0;
@@ -53,7 +53,8 @@ async function buy(ourWallet, tokenAddress, gasLimit, gasPrice) {
       tokenAddress,
     ]);
 
-    amountOutMin = amounts[1].sub(amounts[1].div(100).mul(`${slippage}`));
+    // amountOutMin = amounts[1] - (amounts[1] / 100n) * BigInt(slippage);
+    amountOutMin = amounts[1] - amounts[1] * (BigInt(slippage) / BigInt(100));
   }
 
   // Fill up the transaction Swap
@@ -65,9 +66,9 @@ async function buy(ourWallet, tokenAddress, gasLimit, gasPrice) {
     ourWallet.address,
     Date.now() + 1000 * 60 * 10,
     {
-      value: budget,
-      gasLimit: gasLimit,
-      gasPrice: gasPrice,
+      'value': buyAmount,
+      'gasLimit': gasLimit,
+      'gasPrice': gasPrice,
     }
   );
 
@@ -91,10 +92,10 @@ async function buy(ourWallet, tokenAddress, gasLimit, gasPrice) {
 
 // Sell function (ERC20 -> BNB)
 async function sell(ourWallet, tokenAddress, gasLimit, gasPrice) {
-  const slippage = 0;
+  const slippage = 1;
 
   // % to sell from our balance needs to be 99% as maybe the 100% cannot be executed.
-  const valueToken = 99;
+  const amountToken = 99;
 
   //Instance Swap contract for selling.
   const sellTokenContract = new ethers.Contract(
@@ -109,7 +110,7 @@ async function sell(ourWallet, tokenAddress, gasLimit, gasPrice) {
   );
 
   //99% of our balance will be sold.
-  const sellAmount = tokenBalance.mul(valueToken).div(100);
+  const sellAmount = tokenBalance * (amountToken / 100);
 
   let amountOutMin = 0;
 
@@ -119,7 +120,7 @@ async function sell(ourWallet, tokenAddress, gasLimit, gasPrice) {
   ]);
 
   if (slippage !== 0) {
-    amountOutMin = amounts[1].sub(amounts[1].mul(`${slippage}`).div(100));
+    amountOutMin = amounts[1] - amounts[1] * (BigInt(slippage) / BigInt(100));
   } else {
     amountOutMin = amounts[1];
   }
@@ -148,8 +149,8 @@ async function sell(ourWallet, tokenAddress, gasLimit, gasPrice) {
         ourWallet.address,
         Date.now() + 1000 * 60 * 10,
         {
-          gasLimit: gasLimit,
-          gasPrice: gasPrice,
+          'gasLimit': gasLimit,
+          'gasPrice': gasPrice,
         }
       );
 
@@ -180,10 +181,11 @@ const main = async () => {
   const ourWallet = privateKey.connect(provider);
 
   // Instance Interface
-  const Interface = new ethers.Contract(
-    pancakeSwapRouterV2Address,
-    pancakeRouterABI
-  );
+  const Interface = new ethers.Interface([
+    "function swapExactETHForTokens(uint256 amountOutMin, address[] path, address to, uint256 deadline)",
+    "function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)",
+    "function swapExactETHForTokensSupportingFeeOnTransferTokens(uint amountOutMin,address[] calldata path,address to,uint deadline)",
+  ]);
 
   // Listen to the pending transactions
   provider.on("pending", (tx) => {
@@ -195,7 +197,7 @@ const main = async () => {
         const gasLimit = ethers.formatEther(transaction.gasLimit);
 
         // for example we will be only showing transaction that are higher than 30 bnb
-        if (value > 10) {
+        if (value > 1) {
           console.log(`\nValue BNB: ${value}`);
           console.log(`gasPrice: ${gasPrice}`);
           console.log(`gasLimit: ${gasLimit}`);
@@ -225,7 +227,8 @@ const main = async () => {
                 );
               } catch (err) {
                 if (err) {
-                  console.log(`Final error: ${transaction}`);
+                  console.log(err);
+                  console.log(`\nFinal error: ${transaction}`);
                 }
               }
             }
@@ -280,7 +283,7 @@ const main = async () => {
     console.log(
       `Connection lost with code ${code}! Attempting reconnect in 3s...`
     );
-    provider._websocket.terminate();
+    provider.websocket.terminate();
 
     setTimeout(main, 3000);
   });
