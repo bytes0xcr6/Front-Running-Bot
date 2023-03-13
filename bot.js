@@ -66,9 +66,9 @@ async function buy(ourWallet, tokenAddress, gasLimit, gasPrice) {
     ourWallet.address,
     Date.now() + 1000 * 60 * 10,
     {
-      'value': buyAmount,
-      'gasLimit': ethers.parseUnits(gasLimit, "gwei"),
-      'gasPrice': ethers.parseUnits(gasPrice, "gwei"),
+      'value': buyAmount.toString(),
+      'gasLimit': ethers.parseUnits(gasLimit.toString(), "gwei"),
+      'gasPrice': ethers.parseUnits(gasPrice.toString(), "gwei"),
     }
   );
 
@@ -149,8 +149,8 @@ async function sell(ourWallet, tokenAddress, gasLimit, gasPrice) {
         ourWallet.address,
         Date.now() + 1000 * 60 * 10,
         {
-          'gasLimit': ethers.parseUnits(gasLimit, "gwei"),
-          'gasPrice': ethers.parseUnits(gasPrice, "gwei"),
+          'gasLimit': ethers.parseUnits(gasLimit.toString(), "gwei"),
+          'gasPrice': ethers.parseUnits(gasPrice.toString(), "gwei"),
         }
       );
 
