@@ -182,10 +182,9 @@ const main = async () => {
 
   // Instance Interface
   const Interface = new ethers.Interface([
-    "function swapExactETHForTokens(uint256 amountOutMin, address[] path, address to, uint256 deadline)",
+    "function swapExactETHForTokens(uint amountOutMin, address[] calldata path, address to, uint deadline)",
     "function swapETHForExactTokens(uint amountOut, address[] calldata path, address to, uint deadline)",
-    "function swapExactETHForTokensSupportingFeeOnTransferTokens(uint amountOutMin,address[] calldata path,address to,uint deadline)",
-  ]);
+    "function swapExactETHForTokensSupportingFeeOnTransferTokens(uint amountOutMin, address[] calldata path, address to, uint deadline",]);
 
   // Listen to the pending transactions
   provider.on("pending", (tx) => {
