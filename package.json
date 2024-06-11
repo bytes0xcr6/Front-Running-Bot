@@ -1,13 +1,13 @@
 {
   "name": "frontrunningbot",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
-  "main": "index.js",
+  "main": "bot.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon bot.js"
   },
-  "author": "Cristian Richarte",
+  "author": "0xcr6",
   "license": "ISC",
   "dependencies": {
     "dotenv": "^16.0.3",
